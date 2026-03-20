@@ -1,0 +1,37 @@
+{
+  "next_score": {
+    "type": "float",
+    "default": 25.0,
+    "description": "每个等级所需好感度"
+  },
+  "ranking_limit": {
+    "type": "int",
+    "default": 10,
+    "description": "排行榜展示人数上限"
+  },
+  "use_local_bg": {
+    "type": "bool",
+    "default": false,
+    "description": "是否从 resources/custombg 随机使用本地背景"
+  },
+  "enable_cache_cleanup": {
+    "type": "bool",
+    "default": false,
+    "description": "是否开启定时清理签到缓存"
+  },
+  "cache_cleanup_interval_days": {
+    "type": "int",
+    "default": 7,
+    "description": "每隔多少天执行一次签到缓存清理"
+  },
+  "cache_cleanup_time": {
+    "type": "string",
+    "default": "03:00",
+    "description": "每天检查是否执行缓存清理的时刻，格式为 HH:MM 或 HH:MM:SS"
+  },
+  "cache_retention_days": {
+    "type": "int",
+    "default": 7,
+    "description": "签到缓存文件保留天数，早于该范围的缓存会被删除"
+  }
+}

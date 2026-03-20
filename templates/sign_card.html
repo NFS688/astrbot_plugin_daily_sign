@@ -1,0 +1,283 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: [[SIGN_CARD_WIDTH]]px;
+      height: [[SIGN_CARD_HEIGHT]]px;
+      font-family: [[SYSTEM_FONT_STACK]];
+      color: #ffffff;
+      background: #0b111a;
+      overflow: hidden;
+    }
+    #card {
+      position: relative;
+      width: [[SIGN_CARD_WIDTH]]px;
+      height: [[SIGN_CARD_HEIGHT]]px;
+      padding: 40px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      background: url('[[BG_URL]]') center center / cover no-repeat;
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.05);
+      z-index: 1;
+    }
+    .glass-panel {
+      position: relative;
+      z-index: 2;
+      width: 460px;
+      height: 680px;
+      padding: 34px 30px;
+      border-radius: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(15, 23, 42, 0.34);
+      backdrop-filter: blur(24px);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255, 255, 255, 0.82);
+    }
+    .avatar.fallback {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+    }
+    .nickname {
+      max-width: 290px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 25px;
+      font-weight: 700;
+    }
+    .greeting {
+      font-size: 17px;
+      margin-top: 4px;
+      color: rgba(255, 255, 255, 0.87);
+    }
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .tag {
+      padding: 8px 14px;
+      border-radius: 14px;
+      font-size: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .tag.level-tag {
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.14);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .gradient-text {
+      display: inline-block;
+      color: #f2f7ff;
+      font-weight: 700;
+    }
+    @supports (-webkit-background-clip: text) {
+      .gradient-text {
+        background: linear-gradient(
+          90deg,
+          #62f3ff 0%,
+          #6f85ff 30%,
+          #cf6dff 58%,
+          #ff7ea6 80%,
+          #ffd56e 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    }
+    @supports (background-clip: text) {
+      .gradient-text {
+        background: linear-gradient(
+          90deg,
+          #62f3ff 0%,
+          #6f85ff 30%,
+          #cf6dff 58%,
+          #ff7ea6 80%,
+          #ffd56e 100%
+        );
+        background-clip: text;
+        color: transparent;
+      }
+    }
+    .tag.highlight {
+      border-color: rgba(255, 255, 255, 0.35);
+      background: linear-gradient(
+        135deg,
+        rgba(99, 102, 241, 0.72),
+        rgba(168, 85, 247, 0.72)
+      );
+    }
+    .subline {
+      font-size: 18px;
+      padding: 11px 14px;
+      border-radius: 14px;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.18);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .stat-box {
+      padding: 14px 10px;
+      border-radius: 16px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .stat-label {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.68);
+    }
+    .stat-value {
+      margin-top: 6px;
+      font-size: 23px;
+      font-weight: 800;
+    }
+    .stat-value.rainbow-value {
+      display: inline-block;
+    }
+    .progress-section {
+      padding: 16px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      font-size: 14px;
+    }
+    .progress-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
+    .progress-bar-bg {
+      margin-top: 11px;
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.36);
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: [[PROGRESS_PERCENT]]%;
+      min-width: 8px;
+      border-radius: 999px;
+      background: #ffffff;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.62);
+    }
+    .footer-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 13px;
+      background: rgba(255, 255, 255, 0.05);
+      font-size: 14px;
+    }
+    .saying-box {
+      padding: 10px 12px;
+      border-radius: 13px;
+      text-align: center;
+      line-height: 1.4;
+      font-size: 13px;
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.88);
+    }
+    .brand-footer {
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.44);
+    }
+  </style>
+</head>
+<body>
+  <div id="card">
+    <div class="overlay"></div>
+    <div class="glass-panel">
+      <div>
+        <div class="user-profile">
+          [[AVATAR_HTML]]
+          <div>
+            <div class="nickname">[[NICKNAME]]</div>
+            <div class="greeting">[[HOUR_WORD]]</div>
+          </div>
+        </div>
+        <div class="tags" style="margin-top:12px;">
+          <div class="tag highlight">✨ [[COIN_TEXT]]</div>
+          <div class="tag level-tag">
+            <span>🎭</span>
+            <span class="gradient-text">[[LEVEL_TEXT]]</span>
+          </div>
+        </div>
+        <div class="subline" style="margin-top:12px;">[[TOTAL_TEXT]]</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-label">累计签到</div>
+          <div class="stat-value">[[TOTAL_DAYS]] 天</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">连续签到</div>
+          <div class="stat-value rainbow-value gradient-text">[[CONTINUOUS_DAYS]] 天</div>
+        </div>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-header">
+          <span class="progress-title">[[LEVEL_TEXT]]</span>
+          <span>[[IMPRESSION_TEXT]] / [[TARGET_SCORE_TEXT]]</span>
+        </div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
+      </div>
+
+      <div class="footer-info">
+        <div class="info-row"><span>[[BONUS_TEXT]]</span><span>[[DATE_TEXT]]</span></div>
+        <div class="saying-box">[[SAYING_TEXT]]</div>
+      </div>
+
+      <div class="brand-footer">[[FOOTER_TEXT]]</div>
+    </div>
+  </div>
+</body>
+</html>

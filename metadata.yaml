@@ -1,0 +1,6 @@
+name: astrbot_plugin_daily_sign
+display_name: 每日签到插件
+desc: 提供每日签到、签到图片渲染与好感度排行功能
+version: 0.0.1
+author: Fnillus1on
+repo: https://github.com/Fnillus1on/astrbot_plugin_sign

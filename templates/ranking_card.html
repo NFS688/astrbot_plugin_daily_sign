@@ -1,0 +1,296 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      width: [[RANKING_CARD_WIDTH]]px;
+      height: [[CANVAS_HEIGHT]]px;
+      font-family: [[SYSTEM_FONT_STACK]];
+      background: linear-gradient(180deg, #f6f7fb 0%, #edf2fa 100%);
+    }
+    #card {
+      width: [[RANKING_CARD_WIDTH]]px;
+      height: [[CANVAS_HEIGHT]]px;
+      padding: 36px 48px 28px;
+      overflow: hidden;
+    }
+    .title-top {
+      text-align: center;
+      color: rgba(0, 113, 227, 0.9);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .title {
+      text-align: center;
+      margin-top: 6px;
+      font-size: 56px;
+      font-weight: 800;
+      color: rgba(29, 29, 31, 0.95);
+    }
+    .badge {
+      margin: 18px auto 0;
+      width: fit-content;
+      padding: 8px 18px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      color: rgba(100, 100, 106, 0.95);
+      font-size: 18px;
+    }
+    .podium {
+      margin-top: 20px;
+      display: flex;
+      align-items: flex-end;
+      gap: 14px;
+      min-height: 356px;
+    }
+    .podium-item {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .podium-item.rank-1 { order: 2; }
+    .podium-item.rank-2 { order: 1; }
+    .podium-item.rank-3 { order: 3; }
+    .podium-card {
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      padding: 14px 10px 16px;
+      text-align: center;
+      min-height: 208px;
+      box-shadow: 0 10px 20px rgba(47, 77, 134, 0.08);
+    }
+    .podium-item.rank-1 .podium-card {
+      min-height: 236px;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 247, 226, 0.94),
+        rgba(255, 255, 255, 0.82)
+      );
+      border-color: rgba(255, 218, 131, 0.92);
+    }
+    .podium-item.rank-2 .podium-card {
+      min-height: 216px;
+      background: linear-gradient(
+        180deg,
+        rgba(244, 248, 255, 0.95),
+        rgba(225, 233, 246, 0.9)
+      );
+      border-color: rgba(184, 197, 219, 0.9);
+    }
+    .podium-item.rank-3 .podium-card {
+      min-height: 202px;
+      background: linear-gradient(
+        180deg,
+        rgba(248, 233, 219, 0.95),
+        rgba(236, 205, 176, 0.9)
+      );
+      border-color: rgba(201, 150, 110, 0.88);
+    }
+    .podium-item .badge {
+      margin: 0 auto 10px;
+      padding: 4px 12px;
+      font-size: 18px;
+      font-weight: 700;
+      width: fit-content;
+    }
+    .podium-item.rank-1 .badge { background: rgba(255, 196, 92, 0.85); }
+    .podium-item.rank-2 .badge { background: rgba(212, 220, 233, 0.9); }
+    .podium-item.rank-3 .badge { background: rgba(225, 180, 138, 0.88); }
+    .avatar-shell {
+      position: relative;
+      width: fit-content;
+      margin: 0 auto;
+    }
+    .crown-badge {
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      width: 34px;
+      height: 34px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      border: 1px solid rgba(255, 219, 128, 0.82);
+      background: linear-gradient(
+        180deg,
+        rgba(255, 250, 234, 0.98),
+        rgba(255, 233, 173, 0.95)
+      );
+      box-shadow: 0 6px 14px rgba(163, 110, 25, 0.28);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+    .crown-badge svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+    .avatar {
+      width: 86px;
+      height: 86px;
+      border-radius: 999px;
+      object-fit: cover;
+      border: 2px solid rgba(255, 255, 255, 0.95);
+      background: rgba(240, 244, 250, 1);
+    }
+    .avatar.fallback {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      font-weight: 800;
+      color: rgba(70, 70, 74, 0.95);
+    }
+    .podium-stage {
+      margin-top: 10px;
+      border-radius: 14px 14px 0 0;
+      border: 1px solid rgba(194, 208, 232, 0.75);
+      border-bottom: none;
+      background: linear-gradient(
+        180deg,
+        rgba(233, 240, 252, 0.95),
+        rgba(214, 224, 243, 0.92)
+      );
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+    }
+    .podium-stage.stage-1 {
+      height: 86px;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 238, 189, 0.95),
+        rgba(245, 209, 129, 0.93)
+      );
+      border-color: rgba(230, 187, 90, 0.72);
+    }
+    .podium-stage.stage-2 {
+      height: 68px;
+      background: linear-gradient(
+        180deg,
+        rgba(242, 247, 255, 0.96),
+        rgba(212, 223, 241, 0.92)
+      );
+      border-color: rgba(170, 186, 214, 0.78);
+    }
+    .podium-stage.stage-3 {
+      height: 52px;
+      background: linear-gradient(
+        180deg,
+        rgba(246, 225, 206, 0.95),
+        rgba(224, 175, 134, 0.92)
+      );
+      border-color: rgba(191, 133, 85, 0.78);
+    }
+    .podium-item .name {
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: 700;
+      color: rgba(34, 34, 36, 0.96);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .podium-item .attitude {
+      margin-top: 6px;
+      font-size: 15px;
+      color: rgba(110, 110, 116, 0.95);
+    }
+    .podium-item .score {
+      margin-top: 8px;
+      font-size: 18px;
+      color: rgba(60, 60, 66, 0.95);
+      font-weight: 700;
+    }
+    .list {
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 48px 56px 1fr 190px;
+      align-items: center;
+      gap: 10px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.97);
+      padding: 12px 14px;
+      min-height: 84px;
+    }
+    .rank {
+      text-align: center;
+      font-size: 24px;
+      color: rgba(105, 105, 112, 0.95);
+    }
+    .mini-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      object-fit: cover;
+      border: 2px solid rgba(255, 255, 255, 0.98);
+      background: rgba(240, 244, 250, 1);
+    }
+    .mini-avatar.fallback {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: rgba(70, 70, 74, 0.95);
+    }
+    .meta .name {
+      font-size: 22px;
+      color: rgba(34, 34, 36, 0.96);
+      font-weight: 700;
+    }
+    .meta .attitude {
+      font-size: 16px;
+      margin-top: 4px;
+      color: rgba(110, 110, 116, 0.95);
+    }
+    .bar-wrap {
+      margin-top: 7px;
+      width: 100%;
+      height: 9px;
+      border-radius: 999px;
+      background: rgba(214, 222, 236, 0.8);
+      overflow: hidden;
+    }
+    .bar {
+      height: 100%;
+      border-radius: 999px;
+      background: rgba(0, 113, 227, 0.88);
+      min-width: 8px;
+    }
+    .score {
+      justify-self: end;
+      font-size: 16px;
+      color: rgba(105, 105, 112, 0.96);
+    }
+    .footer {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 16px;
+      color: rgba(124, 124, 132, 0.95);
+    }
+  </style>
+</head>
+<body>
+  <div id="card">
+    <div class="title-top">SIGN PLUGIN</div>
+    <div class="title">[[TITLE]]</div>
+    <div class="badge">更新时间 · [[UPDATED_TEXT]]</div>
+    <div class="podium">[[TOP_ITEMS]]</div>
+    <div class="list">[[ROWS]]</div>
+    <div class="footer">[[FOOTER_TEXT]]</div>
+  </div>
+</body>
+</html>
